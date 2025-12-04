@@ -1,0 +1,29 @@
+services:
+  svr_n8n:
+    image: n8nio/n8n
+    container_name: cont_n8n
+    restart: always # Thêm để đảm bảo n8n tự khởi động lại khi máy chủ khởi động
+    environment:
+      # Cấu hình an toàn
+      - N8N_SECURE_COOKIE=false
+      - GENERIC_TIMEZONE=Asia/Ho_Chi_Minh
+      
+      # Cấu hình cho file Binary (Quan trọng)
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      
+      # Cấu hình cho chế độ Multi-process (Quan trọng cho hiệu suất)
+      - N8N_MCP_ENABLED=true
+      - N8N_MCP_MODE=server
+      
+      # Cấu hình địa chỉ công cộng (chỉ cần 1 lần)
+      # Lưu ý: Các biến này sẽ lấy địa chỉ IP nội bộ (EXTERNAL_IP)
+      - N8N_HOST=${EXTERNAL_IP}
+      - WEBHOOK_URL=http://${EXTERNAL_IP}:5678/ # Thêm http:// và cổng
+      
+      # Loại bỏ N8N_EDITOR_BASE_URL
+      # Loại bỏ các biến bị lặp
+      
+    ports:
+      - "5678:5678" # Ánh xạ cổng 5678 trên Host sang 5678 trong Container
+    volumes:
+      - ${CURR_DIR}/vol_n8n:/home/node/.n8n
